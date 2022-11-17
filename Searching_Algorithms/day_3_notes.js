@@ -99,35 +99,19 @@ var maxSatisfied = function(customers, grumpy, X) {
 // s consists of uppercase and lowercase English letters and digits.
 
 var frequencySort = function(s) {
-    let temp = {};
-    let freq = [];
-    let result = '';
-    
-    for (let i = 0; i < s.length; i++) {
-        if (temp[s[i]]) {
-            temp[s[i]] += 1;
-        } else {
-            temp[s[i]] = 1;
-        }
+    let seen ={}; 
+    for(let char of s){ // store characters Frequency of given string in map
+        seen[char] ? seen[char]++ : seen[char]=1;
     }
     
-    for (let item in temp) {
-        if (freq[temp[item]]) {
-            freq[temp[item]].push(item);
-        } else {
-            freq[temp[item]] = [item];
-        }
-    }
-    for (let i = freq.length-1; i > 0; i--) {
-        if (freq[i]) {
-            for (let item of freq[i]) {
-                let ind = i;
-                while (ind-- > 0) {
-                    result += item;
-                }
-            }
-        }
-    }
+    // sort characters according to characters Frequency in descending order
+    let SortedCharactersArray = Object.keys(seen).sort((a,b)=>seen[b]-seen[a]);
+    
+    let result = ""
+    // iterate through SortedCharactersArray and append character( character frequency )times to result  
+    for(let char of SortedCharactersArray)
+        result += char.repeat(seen[char]);
+    
     return result;
 };
 
@@ -179,76 +163,93 @@ var sortColors = function(nums) {
     return nums;
 };
 
-//  --------------- recursion --------------------
+//  --------------- binary search --------------------
 
-// Given an encoded string, return its decoded string.
+Given a non-negative integer c, decide whether there're two integers a and b such that a2 + b2 = c.
 
-// The encoding rule is: k[encoded_string], where the encoded_string inside the square brackets is being repeated exactly k times. Note that k is guaranteed to be a positive integer.
+Example 1:
 
-// You may assume that the input string is always valid; there are no extra white spaces, square brackets are well-formed, etc. Furthermore, you may assume that the original data does not contain any digits and that digits are only for those repeat numbers, k. For example, there will not be input like 3a or 2[4].
+Input: c = 5
+Output: true
+Explanation: 1 * 1 + 2 * 2 = 5
+Example 2:
 
-// The test cases are generated so that the length of the output will never exceed 105.
+Input: c = 3
+Output: false
 
-// Example 1:
+var judgeSquareSum = function(c) {
+	let a=0;
+	let b=Math.floor(Math.sqrt(c));
+	while(a<=b){
+		let sum = (a*a)+(b*b);
+		if(sum===c){
+			return true;
+		}
+		else if(sum<c){
+			a++;
+		}
+		else{
+			b--;
+		}
+	}
+	return false;
+};
 
-// Input: s = "3[a]2[bc]"
-// Output: "aaabcbc"
-// Example 2:
+//  --------------- binary search --------------------
 
-// Input: s = "3[a2[c]]"
-// Output: "accaccacc"
-// Example 3:
+Koko loves to eat bananas. There are n piles of bananas, the ith pile has piles[i] bananas. The guards have gone and will come back in h hours.
 
-// Input: s = "2[abc]3[cd]ef"
-// Output: "abcabccdcdcdef"
+Koko can decide her bananas-per-hour eating speed of k. Each hour, she chooses some pile of bananas and eats k bananas from that pile. If the pile has less than k bananas, she eats all of them instead and will not eat any more bananas during this hour.
+
+Koko likes to eat slowly but still wants to finish eating all the bananas before the guards return.
+
+Return the minimum integer k such that she can eat all the bananas within h hours.
+
  
-// Constraints:
 
-// 1 <= s.length <= 30
-// s consists of lowercase English letters, digits, and square brackets '[]'.
-// s is guaranteed to be a valid input.
-// All the integers in s are in the range [1, 300].
+Example 1:
 
-var decodeString = function(s) {
-    //there might be [] in [], so using recursion to deal with the content inside []
-    let stack = []
-    let res = []
+Input: piles = [3,6,7,11], h = 8
+Output: 4
+Example 2:
+
+Input: piles = [30,11,23,4,20], h = 5
+Output: 30
+Example 3:
+
+Input: piles = [30,11,23,4,20], h = 6
+Output: 23
+ 
+
+Constraints:
+
+1 <= piles.length <= 104
+piles.length <= h <= 109
+1 <= piles[i] <= 109
+
+var minEatingSpeed = function(piles, h) {
+    /*The range of bananas that Koko can eat is k = 1 to Max(piles)*/
+    let startk = 1;
+    let endk = Math.max(...piles);
     
-    let start = 0
-	//start is the pos behind first [
-    let end = 0
-	//end is the pos behind ] which closes the first [
-    //there will never be single number according to the description
-    for(let i = 0; i < s.length; i++) {
-        if (s[i].charCodeAt() < 58) {
-            res.push(s.slice(end, i))
-            //deal with the strings which can not be in [], '' is ok
-            //the number may larger than 9
-            let times = s[i]
-            while(s[++i].charCodeAt() < 58) {
-                times += s[i]
-            }
-            times = +times
-            stack.push(s[i])
-            start = ++i
-            while(stack.length) {
-                if (s[i] === '[') {
-                    stack.push('[')
-                }
-                if (s[i] === ']') {
-                    stack.pop()
-                }
-                ++i
-            }
-            end = i--
-            str = s.slice(start, i)
-            str = decodeString(str).repeat(times)
-            res.push(str)
+    while(startk <= endk){
+        let midk = Math.floor(startk + (endk - startk)/2);
+        /*midk are the count of bananas that koko decide to eat. 
+        So how many hours she will take to finish the piles?*/
+        let hrs = 0;
+        for(let pile of piles){
+            /*pile is the num of bananas in piles*/
+            hrs += Math.ceil(pile/midk);
+        }
+        if(hrs > h){
+            /*Now if hrs > h she will not be to finish the pile so we have 
+            to increase the bananas by moving start.*/
+            startk = midk + 1;
+        }else{
+            /*If hrs <= h she will be eating too fast so we can reduce the bananas 
+            so she eats slowly. So decrement end.*/
+            endk = midk - 1;
         }
     }
-    if(end < s.length) {
-        //the strings behind ]
-        res.push(s.slice(end))
-    }
-    return res.join('')
+    return startk;
 };

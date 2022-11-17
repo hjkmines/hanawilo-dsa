@@ -89,18 +89,78 @@ countUniqueValues([1,2,2,5,7,7,99])
  * @param {number[]} height
  * @return {number}
  */
- var maxArea = function(height) {
-	let l = 0, r = height.length-1, result=0;
-
-	while(l<r){
-		let h = Math.min(height[l], height[r]);
-		let area = h*(r-l)
-		result = Math.max(area, result)
-		if(height[l]< height[r]){
-		   l++
-		}else{
-			r--
-		}
-	}
-	return result
+ var maxArea = function (height) {
+    let left = 0;
+    let right = height.length - 1;
+    let max = 0;
+    while (left < right) {
+        max = Math.max((right - left) * Math.min(height[left], height[right]), max);
+        if (height[left] <= height[right]) left++;
+        else right--;
+    }
+    return max;
 };
+
+Given an integer array nums, move all 0's to the end of it while maintaining the relative order of the non-zero elements.
+
+Note that you must do this in-place without making a copy of the array.
+
+Example 1:
+
+Input: nums = [0,1,0,3,12]
+Output: [1,3,12,0,0]
+Example 2:
+
+Input: nums = [0]
+Output: [0]
+
+/**
+ * @param {number[]} nums
+ * @return {void} Do not return anything, modify nums in-place instead.
+ */
+var moveZeroes = function(nums) {
+    let low = 0;
+    let high = low + 1;
+
+    while (high <= nums.length - 1) {
+        if (nums[low] !== 0) {
+            low++;
+            high++;
+        } else {
+            if (nums[high] !== 0) {
+                [nums[low], nums[high]] = [nums[high], nums[low]];
+                low++;
+            }
+            high++;
+        }
+    }
+};
+
+Your friend is typing his name into a keyboard. Sometimes, when typing a character c, the key might get long pressed, and the character will be typed 1 or more times.
+
+You examine the typed characters of the keyboard. Return True if it is possible that it was your friends name, with some characters (possibly none) being long pressed.
+
+Example 1:
+
+Input: name = "alex", typed = "aaleex"
+Output: true
+Explanation: 'a' and 'e' in 'alex' were long pressed.
+Example 2:
+
+Input: name = "saeed", typed = "ssaaedd"
+Output: false
+Explanation: 'e' must have been pressed twice, but it was not in the typed output.
+ 
+
+Constraints:
+
+1 <= name.length, typed.length <= 1000
+name and typed consist of only lowercase English letters.
+
+var isLongPressedName = function(name, typed) {
+    for (var i = 0,j=0; i < typed.length && j<=name.length; i++) {
+        if (typed[i] == name[j]) j++;
+        else if (typed[i]!=name[j-1]) return false
+      } 
+      return i==typed.length && j==name.length
+  };
