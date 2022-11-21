@@ -23,7 +23,7 @@ const maxSubarraySum = (arr, n) => {
 
 /* 
 Write a function called longestSubstringInString, which accepts a string and 
-returns the length of the longest substring with all distinct characters.
+returns the length of the longest substring with all distinct characters from the START of the string.
 
 Please write in time complexity of O(n)
 */
@@ -36,11 +36,11 @@ const longestSubstringInString = (str) => {
 
 // longestSubstringInString('') 0
 // longestSubstringInString('rithmschool') 7
-// longestSubstringInString('thisisawesome') 6
-// longestSubstringInString('thecatinthehat') 7
+// longestSubstringInString('thisisawesome') 4
+// longestSubstringInString('thecatinthehat') 5
 // longestSubstringInString('bbbbbb') 1
-// longestSubstringInString('longestsubstring') 8
-// longestSubstringInString('thisishowwedoit') 6
+// longestSubstringInString('longestsubstring') 7
+// longestSubstringInString('thisishowwedoit') 4
 
 
 // You are visiting a farm that has a single row of fruit trees arranged from left to right. The trees are represented by an integer array fruits where fruits[i] is the type of fruit the ith tree produces.
